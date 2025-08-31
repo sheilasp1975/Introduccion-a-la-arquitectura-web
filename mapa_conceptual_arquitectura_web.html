@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Conceptual: Arquitectura Web</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: auto;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+        
+        .mind-map {
+            width: 100%;
+            height: 800px;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .node {
+            position: absolute;
+            padding: 15px 20px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            min-width: 120px;
+            z-index: 10;
+        }
+        
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        }
+        
+        .node.central {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            font-size: 20px;
+            padding: 25px 30px;
+            top: 350px;
+            left: 600px;
+            border: 4px solid white;
+        }
+        
+        .node.level1 {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            font-size: 16px;
+        }
+        
+        .node.level2 {
+            background: linear-gradient(135deg, #45b7d1, #96c93d);
+            font-size: 14px;
+        }
+        
+        .node.level3 {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            font-size: 13px;
+            padding: 12px 16px;
+        }
+        
+        .connection {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+            z-index: 1;
+        }
+        
+        .connection.curved {
+            border-radius: 50px;
+        }
+        
+        /* Posicionamiento específico de nodos */
+        .conceptos { top: 150px; left: 200px; }
+        .componentes { top: 150px; left: 1000px; }
+        .modelos { top: 550px; left: 200px; }
+        .caracteristicas { top: 550px; left: 1000px; }
+        
+        .definicion { top: 50px; left: 100px; }
+        .principios { top: 50px; left: 300px; }
+        .objetivos { top: 250px; left: 100px; }
+        .beneficios { top: 250px; left: 300px; }
+        
+        .cliente { top: 50px; left: 900px; }
+        .servidor { top: 50px; left: 1100px; }
+        .basedatos { top: 250px; left: 900px; }
+        .protocolos { top: 250px; left: 1100px; }
+        .middleware { top: 150px; left: 1200px; }
+        
+        .clienteservidor { top: 450px; left: 50px; }
+        .trescapas { top: 450px; left: 200px; }
+        .soa { top: 650px; left: 50px; }
+        .microservicios { top: 650px; left: 200px; }
+        .monolitica { top: 650px; left: 350px; }
+        
+        .escalabilidad { top: 450px; left: 900px; }
+        .seguridad { top: 450px; left: 1050px; }
+        .mantenibilidad { top: 650px; left: 900px; }
+        .rendimiento { top: 650px; left: 1050px; }
+        .flexibilidad { top: 550px; left: 1200px; }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            max-width: 200px;
+            z-index: 100;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .legend {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .legend h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .node.highlight {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Mapa Conceptual: Arquitectura Web</h1>
+            <p><strong>Introducción a la arquitectura web: conceptos, componentes y modelos de aplicación</strong></p>
+        </div>
+        
+        <div class="mind-map">
+            <!-- Nodo Central -->
+            <div class="node central" data-tooltip="Conjunto de principios y patrones que definen cómo se estructuran, organizan e interactúan los componentes de una aplicación web">
+                🏛️<br>ARQUITECTURA<br>WEB
+            </div>
+            
+            <!-- Conceptos Clave (Nivel 1) -->
+            <div class="node level1 conceptos" data-tooltip="Fundamentos teóricos y definiciones básicas de la arquitectura web">
+                📚 CONCEPTOS<br>CLAVE
+            </div>
+            
+            <div class="node level1 componentes" data-tooltip="Elementos físicos y lógicos que constituyen una aplicación web">
+                🔧 COMPONENTES<br>PRINCIPALES
+            </div>
+            
+            <div class="node level1 modelos" data-tooltip="Patrones arquitectónicos y enfoques estructurales para organizar aplicaciones web">
+                🏗️ MODELOS DE<br>APLICACIÓN
+            </div>
+            
+            <div class="node level1 caracteristicas" data-tooltip="Propiedades y atributos que definen la calidad de una arquitectura web">
+                ⭐ CARACTERÍSTICAS<br>CLAVE
+            </div>
+            
+            <!-- Conceptos Clave (Nivel 2) -->
+            <div class="node level2 definicion" data-tooltip="Marco estructural que define cómo los componentes de software interactúan en aplicaciones web">
+                📖 Definición<br>y Propósito
+            </div>
+            
+            <div class="node level2 principios" data-tooltip="Separación de responsabilidades, modularidad, reutilización y escalabilidad">
+                🎯 Principios<br>Fundamentales
+            </div>
+            
+            <div class="node level2 objetivos" data-tooltip="Crear sistemas eficientes, mantenibles y escalables para la web">
+                🎪 Objetivos<br>Principales
+            </div>
+            
+            <div class="node level2 beneficios" data-tooltip="Mejor organización, mantenimiento simplificado y mayor flexibilidad">
+                ✅ Beneficios<br>Obtenidos
+            </div>
+            
+            <!-- Componentes (Nivel 2) -->
+            <div class="node level2 cliente" data-tooltip="Navegadores web, aplicaciones móviles, interfaces de usuario que consumen servicios">
+                💻 CLIENTE<br>(Frontend)
+            </div>
+            
+            <div class="node level2 servidor" data-tooltip="Servidores web, de aplicaciones y de archivos que procesan solicitudes">
+                🖥️ SERVIDOR<br>(Backend)
+            </div>
+            
+            <div class="node level2 basedatos" data-tooltip="Sistemas de gestión de bases de datos relacionales y NoSQL">
+                🗄️ BASE DE<br>DATOS
+            </div>
+            
+            <div class="node level2 protocolos" data-tooltip="HTTP/HTTPS, TCP/IP, WebSockets para comunicación entre componentes">
+                🌐 PROTOCOLOS<br>DE COMUNICACIÓN
+            </div>
+            
+            <div class="node level2 middleware" data-tooltip="Software intermediario que conecta aplicaciones, servicios y bases de datos">
+                🔗 MIDDLEWARE<br>Y APIS
+            </div>
+            
+            <!-- Modelos de Aplicación (Nivel 2) -->
+            <div class="node level2 clienteservidor" data-tooltip="Modelo tradicional con cliente que solicita servicios a un servidor centralizado">
+                🔄 Cliente-<br>Servidor
+            </div>
+            
+            <div class="node level2 trescapas" data-tooltip="Separación en capas de presentación, lógica de negocio y datos">
+                📋 Tres Capas<br>(3-Tier)
+            </div>
+            
+            <div class="node level2 soa" data-tooltip="Arquitectura basada en servicios reutilizables e interoperables">
+                🔧 SOA<br>(Service Oriented)
+            </div>
+            
+            <div class="node level2 microservicios" data-tooltip="Aplicación como conjunto de servicios pequeños e independientes">
+                🧩 Micro-<br>servicios
+            </div>
+            
+            <div class="node level2 monolitica" data-tooltip="Aplicación desarrollada como una sola unidad desplegable">
+                🏛️ Monolítica
+            </div>
+            
+            <!-- Características (Nivel 2) -->
+            <div class="node level2 escalabilidad" data-tooltip="Capacidad de manejar cargas crecientes de trabajo y usuarios">
+                📈 Escalabilidad
+            </div>
+            
+            <div class="node level2 seguridad" data-tooltip="Protección contra amenazas y vulnerabilidades web">
+                🔒 Seguridad
+            </div>
+            
+            <div class="node level2 mantenibilidad" data-tooltip="Facilidad para modificar, actualizar y corregir el sistema">
+                🔧 Mantenibilidad
+            </div>
+            
+            <div class="node level2 rendimiento" data-tooltip="Velocidad de respuesta y eficiencia en el procesamiento">
+                ⚡ Rendimiento
+            </div>
+            
+            <div class="node level2 flexibilidad" data-tooltip="Adaptabilidad a cambios de requisitos y nuevas tecnologías">
+                🤸 Flexibilidad
+            </div>
+            
+            <!-- Conexiones visuales -->
+            <div class="connection" style="width: 200px; top: 375px; left: 400px; transform: rotate(-15deg);"></div>
+            <div class="connection" style="width: 200px; top: 375px; left: 800px; transform: rotate(15deg);"></div>
+            <div class="connection" style="width: 250px; top: 450px; left: 450px; transform: rotate(35deg);"></div>
+            <div class="connection" style="width: 250px; top: 300px; left: 750px; transform: rotate(-35deg);"></div>
+        </div>
+        
+        <!-- Leyenda -->
+        <div class="legend">
+            <h3>🎨 Leyenda</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ff6b6b, #ee5a52);"></div>
+                <span>Concepto Central</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #4ecdc4, #44a08d);"></div>
+                <span>Categorías Principales</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #45b7d1, #96c93d);"></div>
+                <span>Subcategorías</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                <span>Elementos Específicos</span>
+            </div>
+        </div>
+        
+        <!-- Controles -->
+        <div class="controls">
+            <button class="btn" onclick="resetView()">🔄 Reiniciar Vista</button>
+            <button class="btn" onclick="exportMap()">💾 Exportar</button>
+            <button class="btn" onclick="toggleTooltips()">💬 Tooltips</button>
+        </div>
+        
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+    
+    <script>
+        let tooltipsEnabled = true;
+        
+        // Funcionalidad de tooltips
+        const nodes = document.querySelectorAll('.node');
+        const tooltip = document.getElementById('tooltip');
+        
+        nodes.forEach(node => {
+            node.addEventListener('mouseenter', (e) => {
+                if (!tooltipsEnabled) return;
+                
+                const tooltipText = e.target.getAttribute('data-tooltip');
+                if (tooltipText) {
+                    tooltip.textContent = tooltipText;
+                    tooltip.style.display = 'block';
+                    
+                    // Highlighting del nodo
+                    e.target.classList.add('highlight');
+                }
+            });
+            
+            node.addEventListener('mousemove', (e) => {
+                if (!tooltipsEnabled) return;
+                
+                tooltip.style.left = e.pageX + 10 + 'px';
+                tooltip.style.top = e.pageY - 30 + 'px';
+            });
+            
+            node.addEventListener('mouseleave', (e) => {
+                tooltip.style.display = 'none';
+                e.target.classList.remove('highlight');
+            });
+            
+            // Click para resaltar conexiones
+            node.addEventListener('click', (e) => {
+                // Remover highlights previos
+                nodes.forEach(n => n.classList.remove('highlight'));
+                
+                // Resaltar nodo actual
+                e.target.classList.add('highlight');
+                
+                // Aquí podrías agregar lógica para resaltar nodos relacionados
+                highlightRelatedNodes(e.target);
+            });
+        });
+        
+        function highlightRelatedNodes(clickedNode) {
+            // Lógica para resaltar nodos relacionados basado en la jerarquía
+            const nodeClass = clickedNode.className;
+            
+            if (nodeClass.includes('central')) {
+                // Resaltar todas las categorías principales
+                document.querySelectorAll('.level1').forEach(node => {
+                    node.classList.add('highlight');
+                });
+            } else if (nodeClass.includes('level1')) {
+                // Resaltar subcategorías relacionadas
+                if (nodeClass.includes('conceptos')) {
+                    document.querySelectorAll('.definicion, .principios, .objetivos, .beneficios').forEach(node => {
+                        node.classList.add('highlight');
+                    });
+                } else if (nodeClass.includes('componentes')) {
+                    document.querySelectorAll('.cliente, .servidor, .basedatos, .protocolos, .middleware').forEach(node => {
+                        node.classList.add('highlight');
+                    });
+                } else if (nodeClass.includes('modelos')) {
+                    document.querySelectorAll('.clienteservidor, .trescapas, .soa, .microservicios, .monolitica').forEach(node => {
+                        node.classList.add('highlight');
+                    });
+                } else if (nodeClass.includes('caracteristicas')) {
+                    document.querySelectorAll('.escalabilidad, .seguridad, .mantenibilidad, .rendimiento, .flexibilidad').forEach(node => {
+                        node.classList.add('highlight');
+                    });
+                }
+            }
+        }
+        
+        function resetView() {
+            nodes.forEach(node => {
+                node.classList.remove('highlight');
+            });
+            tooltip.style.display = 'none';
+        }
+        
+        function exportMap() {
+            // Crear una nueva ventana para imprimir
+            window.print();
+        }
+        
+        function toggleTooltips() {
+            tooltipsEnabled = !tooltipsEnabled;
+            const btn = event.target;
+            btn.textContent = tooltipsEnabled ? '💬 Tooltips' : '🔇 Tooltips OFF';
+            
+            if (!tooltipsEnabled) {
+                tooltip.style.display = 'none';
+                nodes.forEach(node => node.classList.remove('highlight'));
+            }
+        }
+        
+        // Animación inicial
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelector('.central').classList.add('highlight');
+                setTimeout(() => {
+                    document.querySelector('.central').classList.remove('highlight');
+                }, 2000);
+            }, 1000);
+        });
+        
+        // Funcionalidad de arrastrar (básica)
+        let isDragging = false;
+        let currentNode = null;
+        let offset = { x: 0, y: 0 };
+        
+        nodes.forEach(node => {
+            node.addEventListener('mousedown', (e) => {
+                if (e.altKey) { // Solo arrastar con Alt presionado
+                    isDragging = true;
+                    currentNode = e.target;
+                    const rect = currentNode.getBoundingClientRect();
+                    offset.x = e.clientX - rect.left;
+                    offset.y = e.clientY - rect.top;
+                    currentNode.style.cursor = 'grabbing';
+                }
+            });
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging && currentNode) {
+                const containerRect = document.querySelector('.mind-map').getBoundingClientRect();
+                const x = e.clientX - containerRect.left - offset.x;
+                const y = e.clientY - containerRect.top - offset.y;
+                
+                currentNode.style.left = Math.max(0, Math.min(x, containerRect.width - currentNode.offsetWidth)) + 'px';
+                currentNode.style.top = Math.max(0, Math.min(y, containerRect.height - currentNode.offsetHeight)) + 'px';
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                if (currentNode) {
+                    currentNode.style.cursor = 'pointer';
+                    currentNode = null;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
