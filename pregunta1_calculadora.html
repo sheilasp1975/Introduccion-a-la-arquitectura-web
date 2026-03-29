@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mi Calculadora Personal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .contenedor {
+      border: 2px solid #333;
+      padding: 20px;
+      background-color: #d4d0c8;
+      width: 340px;
+    }
+
+    h2 {
+      text-align: center;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #000;
+      margin-bottom: 16px;
+    }
+
+    /* ── DISPLAY (formulario + input) ── */
+    form {
+      margin: 0;
+    }
+
+    #pantalla {
+      width: 100%;
+      height: 36px;
+      font-size: 1.2rem;
+      text-align: right;
+      padding: 4px 8px;
+      border: 2px inset #999;
+      background-color: #e8e8e8;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    /* ── TABLA DE BOTONES ── */
+    table {
+      border-collapse: separate;
+      border-spacing: 4px;
+      margin: 0 auto;
+    }
+
+    /* Fila del display ocupa todo el ancho */
+    .fila-display td {
+      padding: 0;
+    }
+
+    input[type="button"] {
+      width: 58px;
+      height: 36px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: #d4d0c8;
+      border: 2px outset #fff;
+      cursor: pointer;
+      color: #000;
+    }
+
+    input[type="button"]:active {
+      border: 2px inset #999;
+    }
+
+    .btn-regresar {
+      width: 130px !important;
+      margin-top: 6px;
+    }
+
+    /* Celda del display abarca las 4 columnas */
+    .td-display {
+      padding: 0 0 6px 0;
+    }
+
+    p.alumno {
+      font-size: 0.78rem;
+      text-align: center;
+      margin-top: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="contenedor">
+  <h2>MI CALCULADORA PERSONAL</h2>
+
+  <form name="calc">
+    <table>
+
+      <!-- FILA DISPLAY -->
+      <tr>
+        <td colspan="4" class="td-display">
+          <input type="text" id="pantalla" name="pantalla" value="" readonly>
+        </td>
+      </tr>
+
+      <!-- FILA 1: 7 8 9 / -->
+      <tr>
+        <td><input type="button" value="7"  onclick="agregar('7')"></td>
+        <td><input type="button" value="8"  onclick="agregar('8')"></td>
+        <td><input type="button" value="9"  onclick="agregar('9')"></td>
+        <td><input type="button" value="/"  onclick="agregar('/')"></td>
+      </tr>
+
+      <!-- FILA 2: 4 5 6 * -->
+      <tr>
+        <td><input type="button" value="4"  onclick="agregar('4')"></td>
+        <td><input type="button" value="5"  onclick="agregar('5')"></td>
+        <td><input type="button" value="6"  onclick="agregar('6')"></td>
+        <td><input type="button" value="*"  onclick="agregar('*')"></td>
+      </tr>
+
+      <!-- FILA 3: 1 2 3 - -->
+      <tr>
+        <td><input type="button" value="1"  onclick="agregar('1')"></td>
+        <td><input type="button" value="2"  onclick="agregar('2')"></td>
+        <td><input type="button" value="3"  onclick="agregar('3')"></td>
+        <td><input type="button" value="-"  onclick="agregar('-')"></td>
+      </tr>
+
+      <!-- FILA 4: 0 +/- . + -->
+      <tr>
+        <td><input type="button" value="0"   onclick="agregar('0')"></td>
+        <td><input type="button" value="+/-" onclick="cambiarSigno()"></td>
+        <td><input type="button" value="."   onclick="agregar('.')"></td>
+        <td><input type="button" value="+"   onclick="agregar('+')"></td>
+      </tr>
+
+      <!-- FILA 5: = y Regresar centrados -->
+      <tr>
+        <td colspan="2" style="text-align:right;">
+          <input type="button" value="=" onclick="calcular()" style="width:58px;height:36px;font-size:1rem;font-weight:bold;background-color:#d4d0c8;border:2px outset #fff;cursor:pointer;">
+        </td>
+        <td colspan="2" style="text-align:left;">
+          <input type="button" value="Regresar" class="btn-regresar" onclick="regresar()">
+        </td>
+      </tr>
+
+    </table>
+  </form>
+
+  <p class="alumno">
+    Programado por: <strong>Sheila Sierralta Pinedo</strong><br>
+    Diseño de Páginas Web y Portales Educativos – UPRIT 2026
+  </p>
+</div>
+
+<script>
+  function agregar(valor) {
+    document.getElementById('pantalla').value += valor;
+  }
+
+  function calcular() {
+    var p = document.getElementById('pantalla');
+    try {
+      p.value = eval(p.value);
+    } catch(e) {
+      p.value = 'Error';
+    }
+  }
+
+  function regresar() {
+    var p = document.getElementById('pantalla');
+    p.value = p.value.slice(0, -1);
+  }
+
+  function cambiarSigno() {
+    var p = document.getElementById('pantalla');
+    if (p.value !== '' && !isNaN(p.value)) {
+      p.value = p.value * -1;
+    }
+  }
+</script>
+
+</body>
+</html>
