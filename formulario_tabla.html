@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario combinado con una tabla</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .contenedor {
+            width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6em;
+            color: #222;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #aaa;
+            margin-bottom: 20px;
+        }
+
+        p.programador {
+            font-size: 0.95em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Con borde visible en cada celda */
+        table.con-borde,
+        table.con-borde td {
+            border: 1px solid #888;
+        }
+
+        td {
+            padding: 8px 12px;
+            vertical-align: middle;
+            font-size: 0.95em;
+        }
+
+        td:first-child {
+            width: 180px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 4px 6px;
+            box-sizing: border-box;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+        }
+
+        select {
+            padding: 4px 6px;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            min-width: 180px;
+        }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            padding: 4px 6px;
+            resize: vertical;
+        }
+
+        .contenedor-enviar {
+            margin-top: 16px;
+        }
+
+        input[type="submit"] {
+            padding: 8px 20px;
+            font-size: 1em;
+            background-color: #8b0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #a00000;
+        }
+
+        .pie {
+            text-align: center;
+            padding: 14px;
+            background-color: #8b0000;
+            color: white;
+            margin-top: 24px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h1>Uso de una tabla para alinear un formulario</h1>
+    <hr>
+
+    <p class="programador"><b>Programado por: </b>Sheila Sierralta Pinedo &nbsp;&nbsp;&nbsp; <b>Curso:</b> Diseño de Páginas Web y Portales Educativos &nbsp;&nbsp;&nbsp; <b>UPRIT – 2026</b></p>
+
+    <form method="get">
+        <table class="con-borde">
+            <tr>
+                <td>Nombre del alumno:</td>
+                <td><input type="text" name="nombre"></td>
+            </tr>
+            <tr>
+                <td>Apellido paterno:</td>
+                <td><input type="text" name="apellido_p"></td>
+            </tr>
+            <tr>
+                <td>Apellido materno:</td>
+                <td><input type="text" name="apellido_m"></td>
+            </tr>
+            <tr>
+                <td>Correo electrónico:</td>
+                <td><input type="email" name="correo"></td>
+            </tr>
+            <tr>
+                <td>Edad:</td>
+                <td><input type="number" name="edad" min="15" max="60"></td>
+            </tr>
+            <tr>
+                <td>Institución educativa:</td>
+                <td>
+                    <select name="institucion">
+                        <option value="uprit">UPRIT</option>
+                        <option value="unt">UNT</option>
+                        <option value="upao">UPAO</option>
+                        <option value="utp">UTP</option>
+                        <option value="ucv">UCV</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Distrito:</td>
+                <td>
+                    <select name="distrito">
+                        <option value="trujillo">Trujillo</option>
+                        <option value="victor_larco">Víctor Larco</option>
+                        <option value="la_esperanza">La Esperanza</option>
+                        <option value="el_porvenir">El Porvenir</option>
+                        <option value="huanchaco">Huanchaco</option>
+                        <option value="florencia">Florencia de Mora</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Comentarios:</td>
+                <td>
+                    <textarea cols="30" rows="6" name="comentarios"></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <input type="submit" value="Enviar datos">
+    </form>
+
+    <div class="pie">
+        <p>Universidad Privada de Trujillo – UPRIT &nbsp;|&nbsp; Facultad de Derecho y Ciencias Sociales</p>
+        <p>Asignatura: Diseño de Páginas Web y Portales Educativos &nbsp;|&nbsp; Ciclo VI – 2026</p>
+    </div>
+
+</div>
+
+</body>
+</html>
