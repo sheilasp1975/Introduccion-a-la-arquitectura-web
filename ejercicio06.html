@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 06 – Celsius a Fahrenheit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a0a00;
+      --card: #261200;
+      --border: #3d1f00;
+      --accent: #fb923c;
+      --accent2: #fbbf24;
+      --text: #fff7ed;
+      --muted: #7c5a3a;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;
+      background-image: radial-gradient(ellipse at top right, #2d1200 0%, transparent 60%);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 440px;
+    }
+    .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent);
+      display: inline-block; padding: 0.2em 0.7em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.78rem; margin-bottom: 2rem; line-height: 1.6; }
+
+    .formula {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.6rem 1rem; text-align: center; font-size: 0.8rem;
+      color: var(--accent2); margin-bottom: 1.5rem; letter-spacing: 0.05em;
+    }
+
+    label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+    }
+    .input-unit { position: relative; margin-bottom: 1.2rem; }
+    .input-unit input {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 3rem 0.8rem 1rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 1rem; outline: none; transition: border-color 0.2s;
+    }
+    .input-unit input:focus { border-color: var(--accent); }
+    .input-unit .unit {
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--accent); font-size: 0.85rem; font-weight: 700;
+    }
+
+    button {
+      width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #1a0a00; border: none; border-radius: 8px; padding: 0.85rem;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+    }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .result { margin-top: 1.5rem; display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    .conversion-display {
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+      background: rgba(251,146,60,0.08); border: 1px solid rgba(251,146,60,0.2);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 0.8rem;
+    }
+    .val-box { text-align: center; }
+    .val-box .num { font-family: var(--font-display); font-size: 2rem; font-weight: 800; }
+    .val-box .unit-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .arrow { font-size: 1.5rem; color: var(--accent); }
+
+    .contexto {
+      text-align: center; font-size: 0.78rem; color: var(--muted);
+      background: var(--bg); border-radius: 8px; padding: 0.6rem; border: 1px solid var(--border);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Ejercicio 06</span>
+    <h1>Celsius a<br>Fahrenheit</h1>
+    <p class="subtitle">Convierte temperatura de grados Celsius a Fahrenheit instantáneamente.</p>
+
+    <div class="formula">°F = (°C × 9/5) + 32</div>
+
+    <label>Temperatura en Celsius</label>
+    <div class="input-unit">
+      <input type="number" id="celsius" placeholder="Ej: 25, 100, -10..." />
+      <span class="unit">°C</span>
+    </div>
+
+    <button onclick="convertir()">Convertir</button>
+
+    <div class="result" id="resultado">
+      <div class="conversion-display">
+        <div class="val-box">
+          <div class="num" id="rCelsius" style="color:#fb923c">—</div>
+          <div class="unit-label">Celsius</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="val-box">
+          <div class="num" id="rFahrenheit" style="color:#fbbf24">—</div>
+          <div class="unit-label">Fahrenheit</div>
+        </div>
+      </div>
+      <div class="contexto" id="contexto"></div>
+    </div>
+  </div>
+
+  <script>
+    function convertir() {
+      const c = parseFloat(document.getElementById('celsius').value);
+      if (isNaN(c)) { alert('Ingresa una temperatura válida.'); return; }
+
+      const f = (c * 9 / 5) + 32;
+
+      document.getElementById('rCelsius').textContent = c + '°C';
+      document.getElementById('rFahrenheit').textContent = f.toFixed(2) + '°F';
+
+      let ctx = '';
+      if (c <= 0) ctx = '🧊 Temperatura de congelación o menor.';
+      else if (c < 15) ctx = '🌬️ Temperatura fría.';
+      else if (c < 25) ctx = '😊 Temperatura agradable.';
+      else if (c < 35) ctx = '☀️ Temperatura cálida.';
+      else ctx = '🔥 Temperatura muy caliente.';
+
+      document.getElementById('contexto').textContent = ctx;
+      document.getElementById('resultado').className = 'result show';
+    }
+
+    document.getElementById('celsius').addEventListener('keydown', e => {
+      if (e.key === 'Enter') convertir();
+    });
+  </script>
+</body>
+</html>

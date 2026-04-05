@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 07 – Año Bisiesto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #020818;
+      --card: #050e24;
+      --border: #0d1f3c;
+      --accent: #60a5fa;
+      --accent2: #818cf8;
+      --text: #e0f2fe;
+      --muted: #4a6180;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;
+      background-image:
+        radial-gradient(circle at 20% 30%, #040e2a 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, #030b1c 0%, transparent 50%);
+    }
+    .stars {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0;
+    }
+    .star {
+      position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--d) infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.1; } 50% { opacity: 0.7; }
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 440px; position: relative; z-index: 1;
+      box-shadow: 0 0 80px rgba(96,165,250,0.06);
+    }
+    .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent);
+      display: inline-block; padding: 0.2em 0.7em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.78rem; margin-bottom: 2rem; line-height: 1.6; }
+
+    .regla {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.8rem 1rem; font-size: 0.72rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.8;
+    }
+    .regla strong { color: var(--accent); }
+
+    label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+    }
+    input[type="number"] {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 1rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 1rem; outline: none;
+      transition: border-color 0.2s; margin-bottom: 1.2rem;
+    }
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    button {
+      width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #020818; border: none; border-radius: 8px; padding: 0.85rem;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+    }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .result { margin-top: 1.5rem; display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    .resultado-box {
+      border-radius: 12px; padding: 1.5rem; text-align: center;
+    }
+    .resultado-box.bisiesto { background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.3); }
+    .resultado-box.normal { background: rgba(74,97,128,0.15); border: 1px solid rgba(74,97,128,0.3); }
+
+    .resultado-box .icono { font-size: 2.5rem; margin-bottom: 0.4rem; }
+    .resultado-box .titulo { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .resultado-box .detalle { font-size: 0.76rem; color: var(--muted); line-height: 1.6; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="card">
+    <span class="tag">Ejercicio 07</span>
+    <h1>¿Año<br>Bisiesto?</h1>
+    <p class="subtitle">Determina si un año es bisiesto (366 días) o año común (365 días).</p>
+
+    <div class="regla">
+      Un año es bisiesto si:<br>
+      <strong>1.</strong> Es divisible entre 4, Y<br>
+      <strong>2.</strong> No es divisible entre 100 (salvo que también sea divisible entre 400).
+    </div>
+
+    <label for="anio">Año</label>
+    <input type="number" id="anio" placeholder="Ej: 2024, 1900, 2000..." />
+
+    <button onclick="verificar()">Verificar</button>
+
+    <div class="result" id="resultado">
+      <div class="resultado-box" id="caja">
+        <div class="icono" id="icono"></div>
+        <div class="titulo" id="titulo"></div>
+        <div class="detalle" id="detalle"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Crear estrellas decorativas
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div');
+      const size = Math.random() * 2 + 1;
+      s.className = 'star';
+      s.style.cssText = `
+        width:${size}px; height:${size}px;
+        top:${Math.random()*100}%;
+        left:${Math.random()*100}%;
+        --d:${(Math.random()*3+1.5).toFixed(1)}s;
+        animation-delay:${(Math.random()*3).toFixed(1)}s;
+      `;
+      starsContainer.appendChild(s);
+    }
+
+    function esBisiesto(y) {
+      return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+    }
+
+    function verificar() {
+      const anio = parseInt(document.getElementById('anio').value);
+      if (isNaN(anio)) { alert('Ingresa un año válido.'); return; }
+
+      const bisiesto = esBisiesto(anio);
+      const caja = document.getElementById('caja');
+      caja.className = 'resultado-box ' + (bisiesto ? 'bisiesto' : 'normal');
+      document.getElementById('icono').textContent = bisiesto ? '🗓️✨' : '📅';
+      document.getElementById('titulo').textContent = bisiesto ? `${anio} es BISIESTO` : `${anio} NO es bisiesto`;
+      document.getElementById('detalle').textContent = bisiesto
+        ? `Este año tiene 366 días. El 29 de febrero existe en el calendario.`
+        : `Este año tiene 365 días. No hay 29 de febrero.`;
+      document.getElementById('resultado').className = 'result show';
+    }
+
+    document.getElementById('anio').addEventListener('keydown', e => {
+      if (e.key === 'Enter') verificar();
+    });
+  </script>
+</body>
+</html>

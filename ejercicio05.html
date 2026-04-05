@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 05 – Descuento por Compra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a1209;
+      --card: #0f1c0d;
+      --border: #1d3318;
+      --accent: #4ade80;
+      --accent2: #86efac;
+      --text: #dcfce7;
+      --muted: #4b7a52;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+      background-image: radial-gradient(circle at 30% 70%, #0d2210 0%, transparent 50%);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 480px;
+    }
+    .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent);
+      display: inline-block; padding: 0.2em 0.7em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.78rem; margin-bottom: 1.5rem; line-height: 1.6; }
+
+    .tabla-descuentos {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.4rem; margin-bottom: 1.5rem;
+    }
+    .fila {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.5rem 0.8rem; display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--muted);
+    }
+    .fila .desc { color: var(--accent); font-weight: 700; }
+
+    label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+    }
+    .input-wrap { position: relative; margin-bottom: 1.2rem; }
+    .input-wrap span {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 0.9rem;
+    }
+    input[type="number"] {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 1rem 0.8rem 2rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 1rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    button {
+      width: 100%; background: var(--accent); color: #0a1209;
+      border: none; border-radius: 8px; padding: 0.85rem;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+    }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .result { margin-top: 1.5rem; display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    .resumen {
+      background: rgba(74,222,128,0.07); border: 1px solid rgba(74,222,128,0.2);
+      border-radius: 12px; overflow: hidden;
+    }
+    .resumen-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.7rem 1rem; font-size: 0.82rem;
+    }
+    .resumen-row:not(:last-child) { border-bottom: 1px solid rgba(74,222,128,0.1); }
+    .resumen-row.total { font-family: var(--font-display); font-size: 1rem; font-weight: 800; }
+    .resumen-row .val { color: var(--accent); }
+    .resumen-row.total .val { font-size: 1.3rem; }
+    .resumen-row.descuento .val { color: #f87171; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Ejercicio 05</span>
+    <h1>Descuento<br>por Compra</h1>
+    <p class="subtitle">El descuento se aplica automáticamente según el monto de compra.</p>
+
+    <div class="tabla-descuentos">
+      <div class="fila"><span>Menos de S/100</span><span class="desc">0%</span></div>
+      <div class="fila"><span>S/100 – S/299</span><span class="desc">5%</span></div>
+      <div class="fila"><span>S/300 – S/499</span><span class="desc">10%</span></div>
+      <div class="fila"><span>S/500 o más</span><span class="desc">20%</span></div>
+    </div>
+
+    <label>Monto de compra (S/)</label>
+    <div class="input-wrap">
+      <span>S/</span>
+      <input type="number" id="monto" min="0" placeholder="0.00" />
+    </div>
+
+    <button onclick="calcular()">Calcular Descuento</button>
+
+    <div class="result" id="resultado">
+      <div class="resumen">
+        <div class="resumen-row"><span>Monto original</span><span class="val" id="rOriginal">—</span></div>
+        <div class="resumen-row"><span>Descuento aplicado</span><span class="val" id="rPorcentaje">—</span></div>
+        <div class="resumen-row descuento"><span>Monto de descuento</span><span class="val" id="rDescuento">—</span></div>
+        <div class="resumen-row total"><span>Total a pagar</span><span class="val" id="rTotal">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcular() {
+      const monto = parseFloat(document.getElementById('monto').value);
+      if (isNaN(monto) || monto < 0) { alert('Ingresa un monto válido.'); return; }
+
+      let porcentaje = 0;
+      if (monto >= 500) porcentaje = 20;
+      else if (monto >= 300) porcentaje = 10;
+      else if (monto >= 100) porcentaje = 5;
+
+      const descuento = monto * (porcentaje / 100);
+      const total = monto - descuento;
+
+      document.getElementById('rOriginal').textContent = 'S/ ' + monto.toFixed(2);
+      document.getElementById('rPorcentaje').textContent = porcentaje + '%';
+      document.getElementById('rDescuento').textContent = '- S/ ' + descuento.toFixed(2);
+      document.getElementById('rTotal').textContent = 'S/ ' + total.toFixed(2);
+      document.getElementById('resultado').className = 'result show';
+    }
+  </script>
+</body>
+</html>

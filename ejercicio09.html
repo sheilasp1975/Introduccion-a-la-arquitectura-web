@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 09 – Día de la Semana</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #001a1a;
+      --card: #002626;
+      --border: #003d3d;
+      --accent: #2dd4bf;
+      --accent2: #14b8a6;
+      --text: #f0fdfa;
+      --muted: #2d7a70;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;
+      background-image: radial-gradient(circle at 60% 40%, #001f1f 0%, transparent 60%);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 480px;
+    }
+    .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent);
+      display: inline-block; padding: 0.2em 0.7em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.78rem; margin-bottom: 1.5rem; line-height: 1.6; }
+
+    .semana-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 0.3rem; margin-bottom: 1.5rem;
+    }
+    .dia-btn {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.4rem 0.2rem; text-align: center; font-size: 0.6rem;
+      color: var(--muted); cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+    }
+    .dia-btn .num-dia { font-family: var(--font-display); font-size: 1rem; font-weight: 800; }
+    .dia-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .dia-btn.activo { background: rgba(45,212,191,0.15); border-color: var(--accent); color: var(--accent); }
+
+    label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+    }
+    input[type="number"] {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 1rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 1rem; outline: none;
+      transition: border-color 0.2s; margin-bottom: 1.2rem;
+    }
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    button {
+      width: 100%; background: var(--accent); color: #001a1a;
+      border: none; border-radius: 8px; padding: 0.85rem;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+    }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .result { margin-top: 1.5rem; display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    .dia-display {
+      background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.25);
+      border-radius: 12px; padding: 1.5rem; text-align: center;
+    }
+    .dia-display .icono { font-size: 2.5rem; margin-bottom: 0.4rem; }
+    .dia-display .nombre { font-family: var(--font-display); font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .dia-display .numero { color: var(--muted); font-size: 0.75rem; margin-top: 0.3rem; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Ejercicio 09</span>
+    <h1>Día de<br>la Semana</h1>
+    <p class="subtitle">Ingresa un número del 1 al 7 para conocer el día de la semana correspondiente.</p>
+
+    <div class="semana-grid" id="semanaGrid"></div>
+
+    <label for="numero">Número (1 = Lunes … 7 = Domingo)</label>
+    <input type="number" id="numero" min="1" max="7" placeholder="Ingresa del 1 al 7" />
+
+    <button onclick="obtenerDia()">Mostrar Día</button>
+
+    <div class="result" id="resultado">
+      <div class="dia-display">
+        <div class="icono" id="icono"></div>
+        <div class="nombre" id="nombre"></div>
+        <div class="numero" id="nro"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dias = [
+      { nombre: 'Lunes',     icono: '💼', abrev: 'Lun' },
+      { nombre: 'Martes',    icono: '🔥', abrev: 'Mar' },
+      { nombre: 'Miércoles', icono: '🌿', abrev: 'Mié' },
+      { nombre: 'Jueves',    icono: '📚', abrev: 'Jue' },
+      { nombre: 'Viernes',   icono: '🎉', abrev: 'Vie' },
+      { nombre: 'Sábado',    icono: '🌟', abrev: 'Sáb' },
+      { nombre: 'Domingo',   icono: '☀️', abrev: 'Dom' }
+    ];
+
+    // Crear grid de días
+    const grid = document.getElementById('semanaGrid');
+    dias.forEach((d, i) => {
+      const btn = document.createElement('div');
+      btn.className = 'dia-btn';
+      btn.id = 'dia-' + (i + 1);
+      btn.innerHTML = `<span class="num-dia">${i + 1}</span><span>${d.abrev}</span>`;
+      btn.onclick = () => {
+        document.getElementById('numero').value = i + 1;
+        obtenerDia();
+      };
+      grid.appendChild(btn);
+    });
+
+    function obtenerDia() {
+      const n = parseInt(document.getElementById('numero').value);
+      if (isNaN(n) || n < 1 || n > 7) {
+        alert('Ingresa un número entre 1 y 7.');
+        return;
+      }
+
+      // Actualizar grid visual
+      for (let i = 1; i <= 7; i++) {
+        document.getElementById('dia-' + i).className = 'dia-btn' + (i === n ? ' activo' : '');
+      }
+
+      const dia = dias[n - 1];
+      document.getElementById('icono').textContent = dia.icono;
+      document.getElementById('nombre').textContent = dia.nombre;
+      document.getElementById('nro').textContent = `Número ${n} de la semana`;
+      document.getElementById('resultado').className = 'result show';
+    }
+
+    document.getElementById('numero').addEventListener('keydown', e => {
+      if (e.key === 'Enter') obtenerDia();
+    });
+
+    document.getElementById('numero').addEventListener('input', () => {
+      const n = parseInt(document.getElementById('numero').value);
+      if (!isNaN(n) && n >= 1 && n <= 7) obtenerDia();
+    });
+  </script>
+</body>
+</html>

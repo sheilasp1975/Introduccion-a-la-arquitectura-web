@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sesión 5.2 – Práctica HTML5 & JavaScript</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080c14;
+      --card: #0e1320;
+      --border: #1a2238;
+      --accent: #38bdf8;
+      --text: #e2e8f0;
+      --muted: #4a5a75;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      min-height: 100vh; padding: 3rem 1.5rem;
+      background-image: radial-gradient(circle at 50% 0%, #0d1729 0%, transparent 60%);
+    }
+    header { text-align: center; margin-bottom: 3rem; }
+    .badge {
+      display: inline-block; font-size: 0.65rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent);
+      padding: 0.25em 0.9em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    header h1 { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 0.5rem; }
+    header p { color: var(--muted); font-size: 0.82rem; max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.4rem; text-decoration: none; color: var(--text);
+      display: flex; flex-direction: column; gap: 0.5rem;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--color, var(--accent)); opacity: 0; transition: opacity 0.2s;
+    }
+    .card:hover { border-color: var(--color, var(--accent)); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+    .card:hover::before { opacity: 1; }
+
+    .card .num {
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--color, var(--accent));
+    }
+    .card h2 { font-family: var(--font-display); font-size: 1.05rem; line-height: 1.25; }
+    .card p { font-size: 0.72rem; color: var(--muted); line-height: 1.6; flex: 1; }
+    .card .arrow {
+      align-self: flex-end; font-size: 0.75rem; color: var(--color, var(--accent));
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .card:hover .arrow { opacity: 1; }
+
+    footer { text-align: center; margin-top: 3rem; color: var(--muted); font-size: 0.7rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">Sesión 5.2 — Tarea 1</div>
+    <h1>Práctica HTML5<br>& JavaScript</h1>
+    <p>10 ejercicios propuestos desarrollados con HTML5 y JavaScript puro. Haz clic en cualquier ejercicio para abrirlo.</p>
+  </header>
+
+  <div class="grid">
+    <a href="ejercicio01.html" class="card" style="--color:#7fff6e">
+      <span class="num">Ejercicio 01</span>
+      <h2>Positivo, Negativo o Cero</h2>
+      <p>Determina el signo de cualquier número ingresado por el usuario.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio02.html" class="card" style="--color:#ffcc00">
+      <span class="num">Ejercicio 02</span>
+      <h2>Promedio de 3 Notas</h2>
+      <p>Calcula el promedio de tres notas e indica si el estudiante aprueba o desaprueba.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio03.html" class="card" style="--color:#38bdf8">
+      <span class="num">Ejercicio 03</span>
+      <h2>Mayor de Tres Números</h2>
+      <p>Compara tres números e identifica cuál es el mayor con visualización tipo pódium.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio04.html" class="card" style="--color:#a78bfa">
+      <span class="num">Ejercicio 04</span>
+      <h2>¿Mayor de Edad?</h2>
+      <p>Determina si una persona es mayor o menor de edad según su edad ingresada.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio05.html" class="card" style="--color:#4ade80">
+      <span class="num">Ejercicio 05</span>
+      <h2>Descuento por Compra</h2>
+      <p>Aplica descuentos automáticos del 0%, 5%, 10% o 20% según el monto de compra.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio06.html" class="card" style="--color:#fb923c">
+      <span class="num">Ejercicio 06</span>
+      <h2>Celsius a Fahrenheit</h2>
+      <p>Convierte grados Celsius a Fahrenheit usando la fórmula estándar de conversión.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio07.html" class="card" style="--color:#60a5fa">
+      <span class="num">Ejercicio 07</span>
+      <h2>¿Año Bisiesto?</h2>
+      <p>Verifica si un año es bisiesto aplicando las reglas del calendario gregoriano.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio08.html" class="card" style="--color:#e879f9">
+      <span class="num">Ejercicio 08</span>
+      <h2>Área de un Triángulo</h2>
+      <p>Calcula el área de un triángulo con base y altura usando la fórmula A = (b×h)/2.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio09.html" class="card" style="--color:#2dd4bf">
+      <span class="num">Ejercicio 09</span>
+      <h2>Día de la Semana</h2>
+      <p>Muestra el nombre del día de la semana correspondiente a un número del 1 al 7.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+    <a href="ejercicio10.html" class="card" style="--color:#f97316">
+      <span class="num">Ejercicio 10</span>
+      <h2>Múltiplo de 3 y 5</h2>
+      <p>Determina si un número es múltiplo de 3, de 5, de ambos o de ninguno.</p>
+      <span class="arrow">Abrir →</span>
+    </a>
+  </div>
+
+  <footer>
+    <p>HTML5 &amp; JavaScript · Diseño de Páginas Web · UPRIT</p>
+  </footer>
+</body>
+</html>

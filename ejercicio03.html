@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 03 – Mayor de Tres Números</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0f1e;
+      --card: #111827;
+      --border: #1f2d44;
+      --accent: #38bdf8;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-image: radial-gradient(ellipse at top, #0c1a35 0%, transparent 70%);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 480px;
+    }
+    .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent);
+      display: inline-block; padding: 0.2em 0.7em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; line-height: 1.2; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.78rem; margin-bottom: 2rem; line-height: 1.6; }
+
+    .inputs-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem;
+    }
+    .input-group label {
+      display: block; font-size: 0.65rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem;
+    }
+    input[type="number"] {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem 0.6rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s; text-align: center;
+    }
+    input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,0.1); }
+
+    button {
+      width: 100%; background: var(--accent); color: #0a0f1e;
+      border: none; border-radius: 8px; padding: 0.85rem;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+    }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .result { margin-top: 1.5rem; display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    .podium {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 0.5rem; margin-bottom: 1rem; height: 100px;
+    }
+
+    .podium-block {
+      flex: 1; border-radius: 6px 6px 0 0; display: flex;
+      flex-direction: column; align-items: center; justify-content: flex-end;
+      padding-bottom: 0.5rem; transition: all 0.4s ease;
+      background: var(--border); position: relative; overflow: hidden;
+    }
+    .podium-block.winner { background: var(--accent); }
+    .podium-block .num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: #0a0f1e; }
+    .podium-block .pos { font-size: 0.6rem; color: rgba(10,15,30,0.7); letter-spacing: 0.1em; }
+    .podium-block:not(.winner) .num { color: var(--muted); }
+    .podium-block:not(.winner) .pos { color: var(--muted); }
+
+    .mayor-label {
+      text-align: center; padding: 0.8rem;
+      background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2);
+      border-radius: 10px; font-family: var(--font-display); font-size: 0.9rem;
+    }
+    .mayor-label span { color: var(--accent); font-size: 1.4rem; font-weight: 800; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Ejercicio 03</span>
+    <h1>Mayor de<br>Tres Números</h1>
+    <p class="subtitle">Ingresa tres números y se identificará cuál es el mayor.</p>
+
+    <div class="inputs-grid">
+      <div class="input-group">
+        <label>Número A</label>
+        <input type="number" id="na" placeholder="A" />
+      </div>
+      <div class="input-group">
+        <label>Número B</label>
+        <input type="number" id="nb" placeholder="B" />
+      </div>
+      <div class="input-group">
+        <label>Número C</label>
+        <input type="number" id="nc" placeholder="C" />
+      </div>
+    </div>
+
+    <button onclick="encontrarMayor()">Encontrar Mayor</button>
+
+    <div class="result" id="resultado">
+      <div class="podium" id="podium"></div>
+      <div class="mayor-label">
+        El número mayor es: <span id="mayorNum">—</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function encontrarMayor() {
+      const a = parseFloat(document.getElementById('na').value);
+      const b = parseFloat(document.getElementById('nb').value);
+      const c = parseFloat(document.getElementById('nc').value);
+
+      if (isNaN(a) || isNaN(b) || isNaN(c)) { alert('Ingresa los 3 números.'); return; }
+
+      const nums = [
+        { letra: 'A', val: a },
+        { letra: 'B', val: b },
+        { letra: 'C', val: c }
+      ];
+      const max = Math.max(a, b, c);
+      const min = Math.min(a, b, c);
+      const range = max - min || 1;
+
+      const podium = document.getElementById('podium');
+      podium.innerHTML = '';
+
+      nums.forEach(n => {
+        const height = 40 + ((n.val - min) / range) * 55;
+        const isWinner = n.val === max;
+        const div = document.createElement('div');
+        div.className = 'podium-block' + (isWinner ? ' winner' : '');
+        div.style.height = height + 'px';
+        div.innerHTML = `<span class="num">${n.val}</span><span class="pos">${n.letra}</span>`;
+        podium.appendChild(div);
+      });
+
+      document.getElementById('mayorNum').textContent = max;
+      document.getElementById('resultado').className = 'result show';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 02 – Promedio de 3 Notas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e14;
+      --card: #16161f;
+      --border: #2a2a3d;
+      --accent: #ffcc00;
+      --text: #e8e8f0;
+      --muted: #6b6b85;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 0 60px rgba(255,204,0,0.05);
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      display: inline-block;
+      padding: 0.2em 0.7em;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      line-height: 1.2;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-bottom: 1.8rem;
+      line-height: 1.6;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 0.6rem;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      text-align: center;
+    }
+
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    button {
+      width: 100%;
+      background: var(--accent);
+      color: #0e0e14;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    button:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .result {
+      margin-top: 1.5rem;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .result.show { display: block; }
+
+    .promedio-display {
+      background: rgba(255,204,0,0.08);
+      border: 1px solid rgba(255,204,0,0.3);
+      border-radius: 12px;
+      padding: 1.2rem;
+      text-align: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .promedio-display .label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .promedio-display .big { font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .promedio-display .estado { font-size: 0.85rem; margin-top: 0.4rem; }
+
+    .desglose {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .nota-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .nota-item strong { display: block; color: var(--text); font-size: 1rem; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Ejercicio 02</span>
+    <h1>Promedio<br>de 3 Notas</h1>
+    <p class="subtitle">Ingresa las tres notas (escala 0–20) para calcular el promedio y ver si aprueba.</p>
+
+    <div class="inputs-grid">
+      <div class="input-group">
+        <label>Nota 1</label>
+        <input type="number" id="n1" min="0" max="20" placeholder="0-20" />
+      </div>
+      <div class="input-group">
+        <label>Nota 2</label>
+        <input type="number" id="n2" min="0" max="20" placeholder="0-20" />
+      </div>
+      <div class="input-group">
+        <label>Nota 3</label>
+        <input type="number" id="n3" min="0" max="20" placeholder="0-20" />
+      </div>
+    </div>
+
+    <button onclick="calcular()">Calcular Promedio</button>
+
+    <div class="result" id="resultado">
+      <div class="promedio-display">
+        <div class="label">Promedio Final</div>
+        <div class="big" id="promedioNum">—</div>
+        <div class="estado" id="estadoTexto"></div>
+      </div>
+      <div class="desglose">
+        <div class="nota-item">Nota 1<strong id="d1">—</strong></div>
+        <div class="nota-item">Nota 2<strong id="d2">—</strong></div>
+        <div class="nota-item">Nota 3<strong id="d3">—</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcular() {
+      const n1 = parseFloat(document.getElementById('n1').value);
+      const n2 = parseFloat(document.getElementById('n2').value);
+      const n3 = parseFloat(document.getElementById('n3').value);
+
+      if (isNaN(n1) || isNaN(n2) || isNaN(n3)) {
+        alert('Por favor ingresa las 3 notas.');
+        return;
+      }
+
+      const promedio = (n1 + n2 + n3) / 3;
+      const aprueba = promedio >= 11;
+
+      document.getElementById('promedioNum').textContent = promedio.toFixed(2);
+      document.getElementById('estadoTexto').innerHTML = aprueba
+        ? '✅ <strong>Aprobado</strong>'
+        : '❌ <strong>Desaprobado</strong>';
+      document.getElementById('d1').textContent = n1;
+      document.getElementById('d2').textContent = n2;
+      document.getElementById('d3').textContent = n3;
+
+      document.getElementById('promedioNum').style.color = aprueba ? '#7fff6e' : '#ff6eb4';
+      document.getElementById('resultado').className = 'result show';
+    }
+  </script>
+</body>
+</html>

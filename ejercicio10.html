@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio 10 – Múltiplo de 3 y 5</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a0a00;
+      --card: #1f0f04;
+      --border: #3a1f0a;
+      --accent: #f97316;
+      --accent2: #ef4444;
+      --accent3: #22c55e;
+      --text: #fff7ed;
+      --muted: #7a5a40;
+      --font-mono: 'Space Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+    }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;
+      background-image: radial-gradient(circle at 40% 60%, #250d00 0%, transparent 55%);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 480px;
+    }
+    .tag {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid var(--accent);
+      display: inline-block; padding: 0.2em 0.7em; border-radius: 4px; margin-bottom: 1rem;
+    }
+    h1 { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .subtitle { color: var(--muted); font-size: 0.78rem; margin-bottom: 2rem; line-height: 1.6; }
+
+    label {
+      display: block; font-size: 0.68rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem;
+    }
+    input[type="number"] {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.8rem 1rem; color: var(--text);
+      font-family: var(--font-mono); font-size: 1rem; outline: none;
+      transition: border-color 0.2s; margin-bottom: 1.2rem;
+    }
+    input[type="number"]:focus { border-color: var(--accent); }
+
+    button {
+      width: 100%; background: var(--accent); color: #1a0a00;
+      border: none; border-radius: 8px; padding: 0.85rem;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: opacity 0.15s, transform 0.15s;
+    }
+    button:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .result { margin-top: 1.5rem; display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    .checks {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.8rem;
+    }
+    .check-item {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.9rem; text-align: center;
+    }
+    .check-item.ok { border-color: var(--accent3); background: rgba(34,197,94,0.07); }
+    .check-item.no { border-color: var(--accent2); background: rgba(239,68,68,0.07); }
+    .check-item .icono { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .check-item .texto { font-size: 0.72rem; color: var(--muted); }
+    .check-item .divisor { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; }
+    .check-item.ok .divisor { color: var(--accent3); }
+    .check-item.no .divisor { color: var(--accent2); }
+
+    .veredicto {
+      border-radius: 10px; padding: 1rem; text-align: center;
+      font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+    }
+    .veredicto.ambos { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.35); color: var(--accent); }
+    .veredicto.ninguno { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: var(--accent2); }
+    .veredicto.solo { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); color: var(--accent3); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="tag">Ejercicio 10</span>
+    <h1>Múltiplo<br>de 3 y 5</h1>
+    <p class="subtitle">Determina si un número es múltiplo de 3, de 5, de ambos o de ninguno.</p>
+
+    <label for="numero">Número</label>
+    <input type="number" id="numero" placeholder="Ej: 15, 30, 9, 7..." />
+
+    <button onclick="verificar()">Verificar</button>
+
+    <div class="result" id="resultado">
+      <div class="checks">
+        <div class="check-item" id="check3">
+          <div class="icono" id="icono3"></div>
+          <div class="divisor">÷ 3</div>
+          <div class="texto" id="texto3"></div>
+        </div>
+        <div class="check-item" id="check5">
+          <div class="icono" id="icono5"></div>
+          <div class="divisor">÷ 5</div>
+          <div class="texto" id="texto5"></div>
+        </div>
+      </div>
+      <div class="veredicto" id="veredicto"></div>
+    </div>
+  </div>
+
+  <script>
+    function verificar() {
+      const n = parseInt(document.getElementById('numero').value);
+      if (isNaN(n)) { alert('Ingresa un número válido.'); return; }
+
+      const mult3 = n % 3 === 0;
+      const mult5 = n % 5 === 0;
+
+      // Check 3
+      const c3 = document.getElementById('check3');
+      c3.className = 'check-item ' + (mult3 ? 'ok' : 'no');
+      document.getElementById('icono3').textContent = mult3 ? '✅' : '❌';
+      document.getElementById('texto3').textContent = mult3
+        ? `${n} ÷ 3 = ${n / 3}` : `Residuo: ${n % 3}`;
+
+      // Check 5
+      const c5 = document.getElementById('check5');
+      c5.className = 'check-item ' + (mult5 ? 'ok' : 'no');
+      document.getElementById('icono5').textContent = mult5 ? '✅' : '❌';
+      document.getElementById('texto5').textContent = mult5
+        ? `${n} ÷ 5 = ${n / 5}` : `Residuo: ${n % 5}`;
+
+      // Veredicto
+      const v = document.getElementById('veredicto');
+      if (mult3 && mult5) {
+        v.className = 'veredicto ambos';
+        v.textContent = `🎯 ${n} es múltiplo de 3 Y de 5`;
+      } else if (!mult3 && !mult5) {
+        v.className = 'veredicto ninguno';
+        v.textContent = `❌ ${n} NO es múltiplo ni de 3 ni de 5`;
+      } else {
+        v.className = 'veredicto solo';
+        v.textContent = mult3
+          ? `✅ ${n} es múltiplo de 3, pero NO de 5`
+          : `✅ ${n} es múltiplo de 5, pero NO de 3`;
+      }
+
+      document.getElementById('resultado').className = 'result show';
+    }
+
+    document.getElementById('numero').addEventListener('keydown', e => {
+      if (e.key === 'Enter') verificar();
+    });
+  </script>
+</body>
+</html>
