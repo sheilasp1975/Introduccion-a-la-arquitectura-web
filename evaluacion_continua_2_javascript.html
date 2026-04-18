@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0d0f1a;
+    --surface: #141828;
+    --card: #1a1f35;
+    --border: #252d4a;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --green: #22d3a5;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0a0c14;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 28px;
+    background: linear-gradient(135deg, #141828, #1a1f35);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(79,142,247,0.15) 0%, transparent 70%);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .header p { color: var(--muted); font-size: 0.85rem; }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .tab {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .tab:hover { border-color: var(--accent); color: var(--accent); }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    background: rgba(79,142,247,0.15);
+    border: 1px solid rgba(79,142,247,0.3);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+  }
+
+  label { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 5px; margin-top: 12px; }
+
+  input[type="number"], input[type="text"], select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn {
+    margin-top: 14px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 100%;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.98); }
+
+  .result {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--code-bg);
+    border-left: 3px solid var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+  .result.ok { border-color: var(--green); color: var(--green); }
+  .result.warn { border-color: var(--yellow); color: var(--yellow); }
+  .result.err { border-color: var(--red); color: var(--red); }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⟨ Evaluación Continua 2 ⟩</h1>
+  <p>Desarrollo Web — HTML + JavaScript</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('p1')">P1 — Funciones</div>
+  <div class="tab" onclick="showTab('p2')">P2 — Condicionales</div>
+  <div class="tab" onclick="showTab('p3a')">P3.1 — Adolescente</div>
+  <div class="tab" onclick="showTab('p3b')">P3.2 — Calificación</div>
+  <div class="tab" onclick="showTab('p3c')">P3.3 — Switch Mes</div>
+  <div class="tab" onclick="showTab('p3d')">P3.4 — Calculadora</div>
+  <div class="tab" onclick="showTab('p3e')">P3.5 — Bisiesto</div>
+</div>
+
+<!-- P1: Área del rectángulo -->
+<div class="section active" id="sec-p1">
+  <div class="card">
+    <div class="card-title">📐 Pregunta 1 <span class="badge">Función usuario</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Calcula el área de un rectángulo usando una función definida por el usuario.</p>
+    <div class="row">
+      <div>
+        <label>Base (cm)</label>
+        <input type="number" id="p1base" placeholder="Ej: 5">
+      </div>
+      <div>
+        <label>Altura (cm)</label>
+        <input type="number" id="p1altura" placeholder="Ej: 3">
+      </div>
+    </div>
+    <button class="btn" onclick="calcularArea()">Calcular Área</button>
+    <div class="result ok" id="p1result">Resultado aparecerá aquí...</div>
+  </div>
+</div>
+
+<!-- P2: Promedio estudiante -->
+<div class="section" id="sec-p2">
+  <div class="card">
+    <div class="card-title">🎓 Pregunta 2 <span class="badge">if/else if</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Evalúa el promedio de un estudiante usando una función con condicionales.</p>
+    <label>Promedio del estudiante (0–20)</label>
+    <input type="number" id="p2promedio" placeholder="Ingresa el promedio" min="0" max="20">
+    <button class="btn" onclick="evaluarPromedio()">Evaluar Promedio</button>
+    <div class="result" id="p2result">Resultado aparecerá aquí...</div>
+
+    <div class="divider"></div>
+    <div style="font-size:0.78rem;color:var(--muted);">
+      <b style="color:var(--text)">Escala de calificación:</b><br>
+      0–10: Desaprobado &nbsp;|&nbsp; 11–12: Regular &nbsp;|&nbsp; 13–16: Aprobado &nbsp;|&nbsp; 17–18: Bueno &nbsp;|&nbsp; 19–20: Excelente
+    </div>
+  </div>
+</div>
+
+<!-- P3.1: Adolescente -->
+<div class="section" id="sec-p3a">
+  <div class="card">
+    <div class="card-title">🧒 Pregunta 3.1 <span class="badge">Condicional</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Determina si una persona es adolescente (entre 13 y 17 años inclusive).</p>
+    <label>Edad de la persona</label>
+    <input type="number" id="p3aedad" placeholder="Ingresa la edad" min="0">
+    <button class="btn" onclick="verificarAdolescente()">Verificar</button>
+    <div class="result" id="p3aresult">Resultado aparecerá aquí...</div>
+  </div>
+</div>
+
+<!-- P3.2: Calificación 0-20 -->
+<div class="section" id="sec-p3b">
+  <div class="card">
+    <div class="card-title">📊 Pregunta 3.2 <span class="badge">Rangos</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Clasifica una calificación del 0 al 20 en categorías.</p>
+    <label>Calificación (0–20)</label>
+    <input type="number" id="p3bnota" placeholder="Ingresa la calificación" min="0" max="20">
+    <button class="btn" onclick="clasificarNota()">Clasificar</button>
+    <div class="result" id="p3bresult">Resultado aparecerá aquí...</div>
+
+    <div class="divider"></div>
+    <div style="font-size:0.78rem;color:var(--muted);">
+      &lt;10: Muy bajo &nbsp;|&nbsp; 10–13: Regular &nbsp;|&nbsp; 14–17: Bueno &nbsp;|&nbsp; ≥18: Excelente
+    </div>
+  </div>
+</div>
+
+<!-- P3.3: Switch mes -->
+<div class="section" id="sec-p3c">
+  <div class="card">
+    <div class="card-title">📅 Pregunta 3.3 <span class="badge">switch</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Muestra el nombre del mes según el número ingresado (1–12) usando <code style="color:var(--accent)">switch</code>.</p>
+    <label>Número de mes (1–12)</label>
+    <input type="number" id="p3cmes" placeholder="Ej: 4 → Abril" min="1" max="12">
+    <button class="btn" onclick="mostrarMes()">Mostrar Mes</button>
+    <div class="result ok" id="p3cresult">Resultado aparecerá aquí...</div>
+  </div>
+</div>
+
+<!-- P3.4: Calculadora -->
+<div class="section" id="sec-p3d">
+  <div class="card">
+    <div class="card-title">🔢 Pregunta 3.4 <span class="badge">switch</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Pide dos números y un operador (+, -, *, /) y realiza la operación usando <code style="color:var(--accent)">switch</code>.</p>
+    <div class="row">
+      <div>
+        <label>Número 1</label>
+        <input type="number" id="p3dn1" placeholder="Ej: 8">
+      </div>
+      <div>
+        <label>Número 2</label>
+        <input type="number" id="p3dn2" placeholder="Ej: 4">
+      </div>
+    </div>
+    <label>Operador</label>
+    <select id="p3dop">
+      <option value="+">+ (Suma)</option>
+      <option value="-">- (Resta)</option>
+      <option value="*">* (Multiplicación)</option>
+      <option value="/">&divide; (División)</option>
+    </select>
+    <button class="btn" onclick="calcularOperacion()">Calcular</button>
+    <div class="result ok" id="p3dresult">Resultado aparecerá aquí...</div>
+  </div>
+</div>
+
+<!-- P3.5: Año bisiesto -->
+<div class="section" id="sec-p3e">
+  <div class="card">
+    <div class="card-title">📆 Pregunta 3.5 <span class="badge">Lógica</span></div>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:14px;">Evalúa si un año es bisiesto: divisible por 4 y no por 100, o divisible por 400.</p>
+    <label>Año a evaluar</label>
+    <input type="number" id="p3eanio" placeholder="Ej: 2024" min="1">
+    <button class="btn" onclick="verificarBisiesto()">Verificar Año</button>
+    <div class="result" id="p3eresult">Resultado aparecerá aquí...</div>
+
+    <div class="divider"></div>
+    <div style="font-size:0.78rem;color:var(--muted);">
+      Regla: (año % 4 === 0 && año % 100 !== 0) || (año % 400 === 0)
+    </div>
+  </div>
+</div>
+
+<script>
+// --- Navegación por pestañas ---
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function setResult(id, msg, type = '') {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'result ' + type;
+}
+
+// --- P1: Área del rectángulo ---
+function calcularArea() {
+  let base = parseFloat(document.getElementById('p1base').value);
+  let altura = parseFloat(document.getElementById('p1altura').value);
+  if (isNaN(base) || isNaN(altura) || base <= 0 || altura <= 0) {
+    setResult('p1result', '⚠ Ingresa valores válidos mayores a 0.', 'warn');
+    return;
+  }
+  let area = base * altura;
+  setResult('p1result', `📐 Área del rectángulo = ${base} × ${altura} = ${area} cm²`, 'ok');
+}
+
+// --- P2: Promedio estudiante ---
+function evaluarPromedio() {
+  let promedio = parseFloat(document.getElementById('p2promedio').value);
+  if (isNaN(promedio) || promedio < 0 || promedio > 20) {
+    setResult('p2result', '⚠ Ingresa un promedio entre 0 y 20.', 'warn');
+    return;
+  }
+  let categoria, tipo;
+  if (promedio <= 10) {
+    categoria = '❌ Desaprobado'; tipo = 'err';
+  } else if (promedio <= 12) {
+    categoria = '🔵 Regular'; tipo = '';
+  } else if (promedio <= 16) {
+    categoria = '✅ Aprobado'; tipo = 'ok';
+  } else if (promedio <= 18) {
+    categoria = '⭐ Bueno'; tipo = 'ok';
+  } else {
+    categoria = '🏆 Excelente'; tipo = 'ok';
+  }
+  setResult('p2result', `Promedio ${promedio} → ${categoria}`, tipo);
+}
+
+// --- P3.1: Adolescente ---
+function verificarAdolescente() {
+  let edad = parseInt(document.getElementById('p3aedad').value);
+  if (isNaN(edad) || edad < 0) {
+    setResult('p3aresult', '⚠ Ingresa una edad válida.', 'warn');
+    return;
+  }
+  if (edad >= 13 && edad <= 17) {
+    setResult('p3aresult', `✅ Con ${edad} años, la persona SÍ es adolescente (13–17 años).`, 'ok');
+  } else {
+    setResult('p3aresult', `❌ Con ${edad} años, la persona NO es adolescente.`, 'err');
+  }
+}
+
+// --- P3.2: Clasificar nota ---
+function clasificarNota() {
+  let nota = parseFloat(document.getElementById('p3bnota').value);
+  if (isNaN(nota) || nota < 0 || nota > 20) {
+    setResult('p3bresult', '⚠ Ingresa una calificación entre 0 y 20.', 'warn');
+    return;
+  }
+  let msg, tipo;
+  if (nota < 10) {
+    msg = '📉 Muy bajo'; tipo = 'err';
+  } else if (nota <= 13) {
+    msg = '📘 Regular'; tipo = '';
+  } else if (nota <= 17) {
+    msg = '📗 Bueno'; tipo = 'ok';
+  } else {
+    msg = '🏆 Excelente'; tipo = 'ok';
+  }
+  setResult('p3bresult', `Nota ${nota} → ${msg}`, tipo);
+}
+
+// --- P3.3: Switch mes ---
+function mostrarMes() {
+  let num = parseInt(document.getElementById('p3cmes').value);
+  let mes;
+  switch (num) {
+    case 1: mes = 'Enero'; break;
+    case 2: mes = 'Febrero'; break;
+    case 3: mes = 'Marzo'; break;
+    case 4: mes = 'Abril'; break;
+    case 5: mes = 'Mayo'; break;
+    case 6: mes = 'Junio'; break;
+    case 7: mes = 'Julio'; break;
+    case 8: mes = 'Agosto'; break;
+    case 9: mes = 'Septiembre'; break;
+    case 10: mes = 'Octubre'; break;
+    case 11: mes = 'Noviembre'; break;
+    case 12: mes = 'Diciembre'; break;
+    default: mes = null;
+  }
+  if (!mes) {
+    setResult('p3cresult', '⚠ Ingresa un número entre 1 y 12.', 'warn');
+  } else {
+    setResult('p3cresult', `📅 El mes número ${num} es: ${mes}`, 'ok');
+  }
+}
+
+// --- P3.4: Calculadora con switch ---
+function calcularOperacion() {
+  let n1 = parseFloat(document.getElementById('p3dn1').value);
+  let n2 = parseFloat(document.getElementById('p3dn2').value);
+  let op = document.getElementById('p3dop').value;
+  if (isNaN(n1) || isNaN(n2)) {
+    setResult('p3dresult', '⚠ Ingresa dos números válidos.', 'warn');
+    return;
+  }
+  let resultado;
+  switch (op) {
+    case '+': resultado = n1 + n2; break;
+    case '-': resultado = n1 - n2; break;
+    case '*': resultado = n1 * n2; break;
+    case '/':
+      if (n2 === 0) { setResult('p3dresult', '⚠ No se puede dividir entre cero.', 'err'); return; }
+      resultado = n1 / n2;
+      break;
+  }
+  setResult('p3dresult', `🔢 ${n1} ${op} ${n2} = ${parseFloat(resultado.toFixed(4))}`, 'ok');
+}
+
+// --- P3.5: Año bisiesto ---
+function verificarBisiesto() {
+  let anio = parseInt(document.getElementById('p3eanio').value);
+  if (isNaN(anio) || anio < 1) {
+    setResult('p3eresult', '⚠ Ingresa un año válido.', 'warn');
+    return;
+  }
+  let esBisiesto = (anio % 4 === 0 && anio % 100 !== 0) || (anio % 400 === 0);
+  if (esBisiesto) {
+    setResult('p3eresult', `✅ El año ${anio} SÍ es bisiesto (366 días).`, 'ok');
+  } else {
+    setResult('p3eresult', `❌ El año ${anio} NO es bisiesto (365 días).`, 'err');
+  }
+}
+</script>
+</body>
+</html>
